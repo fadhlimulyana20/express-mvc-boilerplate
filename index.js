@@ -3,18 +3,8 @@
 
 import express from 'express';
 import cors from 'cors';
-import winston from 'winston';
-// Winston logger setup
-const logger = winston.createLogger({
-	level: 'info',
-	format: winston.format.combine(
-		winston.format.timestamp(),
-		winston.format.printf(({ timestamp, level, message }) => `${timestamp} [${level}]: ${message}`)
-	),
-	transports: [
-		new winston.transports.Console(),
-	],
-});
+import logger from './utils/logger.js';
+import { requestLogger, notFoundHandler, errorHandler } from './middlewares/loggerMiddleware.js';
 
 
 const app = express();
@@ -25,11 +15,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Request logging middleware
-app.use((req, res, next) => {
-	logger.info(`${req.method} ${req.url}`);
-	next();
-});
+app.use(requestLogger);
 
 
 
@@ -38,26 +24,11 @@ app.get('/', (req, res) => {
 	res.json({ message: 'Hello World' });
 });
 
-// 404 handler
-app.use((req, res, next) => {
-	logger.warn(`404 Not Found: ${req.method} ${req.originalUrl}`);
-	res.status(404).json({ error: 'Not Found' });
-});
+app.use(notFoundHandler);
 
 
 
-// 500 and general error handler
-app.use((err, req, res, next) => {
-	logger.error(`Error: ${err.message}\nStack: ${err.stack}`);
-	if (res.headersSent) {
-		return next(err);
-	}
-	const status = err.status || 500;
-	res.status(status).json({
-		error: status === 500 ? 'Internal Server Error' : err.message || 'Error',
-		details: process.env.NODE_ENV === 'development' ? err.stack : undefined
-	});
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
 	logger.info(`Server running on http://localhost:${PORT}`);
