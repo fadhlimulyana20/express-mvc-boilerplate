@@ -43,6 +43,7 @@
         "knex:rollback": "ts-node ./node_modules/knex/bin/cli.js migrate:rollback",
         "knex:seed": "ts-node ./node_modules/knex/bin/cli.js seed:run",
         "knex:migrate:make": "ts-node ./node_modules/knex/bin/cli.js migrate:make",
-        "knex:test": "ts-node knex-test-connection.ts"
+        "knex:test": "ts-node knex-test-connection.ts",
+        "test": "jest"
     }
 }
