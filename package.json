@@ -1,23 +1,37 @@
 {
-    "type": "module",
     "dependencies": {
+        "@types/bcryptjs": "^2.4.6",
+        "@types/express-validator": "^2.20.33",
+        "@types/jsonwebtoken": "^9.0.10",
+        "bcryptjs": "^3.0.2",
         "cors": "^2.8.5",
         "dotenv": "^17.2.1",
         "express": "^5.1.0",
+        "express-validator": "^7.2.1",
+        "jsonwebtoken": "^9.0.2",
         "knex": "^3.1.0",
         "mysql2": "^3.14.3",
+        "pg": "^8.16.3",
         "winston": "^3.17.0"
     },
     "devDependencies": {
-        "nodemon": "^3.1.10"
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.3",
+        "@types/node": "^24.3.0",
+        "nodemon": "^3.1.10",
+        "ts-node": "^10.9.2",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.9.2"
     },
+    "main": "dist/index.js",
     "scripts": {
-        "dev": "nodemon index.js",
-        "start": "node index.js",
-        "knex:migrate": "knex migrate:latest --esm",
-        "knex:rollback": "knex migrate:rollback --esm",
-        "knex:seed": "knex seed:run --esm",
-        "knex:migrate:make": "knex migrate:make --esm",
-        "knex:test": "node knex-test-connection.js"
+        "dev": "ts-node-dev --respawn --transpile-only index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "knex:migrate": "ts-node ./node_modules/knex/bin/cli.js migrate:latest",
+        "knex:rollback": "ts-node ./node_modules/knex/bin/cli.js migrate:rollback",
+        "knex:seed": "ts-node ./node_modules/knex/bin/cli.js seed:run",
+        "knex:migrate:make": "ts-node ./node_modules/knex/bin/cli.js migrate:make",
+        "knex:test": "ts-node knex-test-connection.ts"
     }
 }

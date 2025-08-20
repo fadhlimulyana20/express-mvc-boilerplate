@@ -1,19 +1,17 @@
-import logger from '../utils/logger.js';
+import logger from '../utils/logger';
+import { Request, Response, NextFunction } from 'express';
 
-// Request logging middleware
-export function requestLogger(req, res, next) {
+export function requestLogger(req: Request, res: Response, next: NextFunction) {
   logger.info(`${req.method} ${req.url}`);
   next();
 }
 
-// 404 handler
-export function notFoundHandler(req, res, next) {
+export function notFoundHandler(req: Request, res: Response, next: NextFunction) {
   logger.warn(`404 Not Found: ${req.method} ${req.originalUrl}`);
   res.status(404).json({ error: 'Not Found' });
 }
 
-// Error handler
-export function errorHandler(err, req, res, next) {
+export function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
   logger.error(`Error: ${err.message}\nStack: ${err.stack}`);
   if (res.headersSent) {
     return next(err);
