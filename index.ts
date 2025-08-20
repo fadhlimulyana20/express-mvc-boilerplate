@@ -2,10 +2,20 @@ import express from 'express';
 import cors from 'cors';
 import logger from './utils/logger';
 import { requestLogger, notFoundHandler, errorHandler } from './middlewares/loggerMiddleware';
+
 import routes from './routes';
+import { setupSwagger, swaggerSpec } from './swagger';
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.get('/api-docs/openapi.json', (_req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+setupSwagger(app);
 
 app.use(cors());
 app.use(express.json());
@@ -17,6 +27,7 @@ app.get('/', (req, res) => {
   logger.info('Hello World endpoint hit');
   res.json({ message: 'Hello World' });
 });
+
 
 app.use(notFoundHandler);
 app.use(errorHandler);
