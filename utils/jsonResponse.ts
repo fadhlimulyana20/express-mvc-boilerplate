@@ -7,6 +7,7 @@ export function jsonResponse({
   data = {},
   meta,
   code = 200,
+  errors = [],
   startTime
 }: {
   res: Response;
@@ -15,8 +16,9 @@ export function jsonResponse({
   data?: any;
   meta?: any;
   code?: number;
+  errors?: Array<any>;
   startTime: number;
 }) {
   const response_time = Date.now() - startTime;
-  return res.status(code).json({ status, message, data, meta, response_time });
+  return res.status(code).json({ status, message, data, meta, errors, response_time });
 }

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { validationResult } from 'express-validator';
 import { AuthService } from '../services/authService';
 import logger from '../utils/logger';
 import { jsonResponse } from '../utils/jsonResponse';
@@ -101,12 +102,24 @@ import { jsonResponse } from '../utils/jsonResponse';
  *         description: Unauthorized
  */
 
+
 export class AuthController {
   static async register(req: Request, res: Response) {
     const startTime = Date.now();
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return jsonResponse({
+        res,
+        status: 'fail',
+        message: 'Validation failed',
+        errors: errors.array(),
+        code: 400,
+        startTime
+      })
+    }
     try {
-      const { username, password, role } = req.body;
-      const user = await AuthService.register(username, password, role);
+      const { name, email, username, password } = req.body;
+      const user = await AuthService.register(name, email, username, password);
       logger.info(`User registered: ${user.id} (${user.username})`);
       return jsonResponse({
         res,
@@ -131,8 +144,8 @@ export class AuthController {
   static async login(req: Request, res: Response) {
     const startTime = Date.now();
     try {
-      const { username, password } = req.body;
-      const result = await AuthService.login(username, password);
+      const { identifier, password } = req.body;
+      const result = await AuthService.login(identifier, password);
       logger.info(`User login: ${result.user.id} (${result.user.username})`);
       return jsonResponse({
         res,
@@ -142,7 +155,7 @@ export class AuthController {
         startTime
       });
     } catch (err: any) {
-      logger.warn(`Failed login attempt for username: ${req.body.username} - ${err.message}`);
+      logger.warn(`Failed login attempt for identifier: ${req.body.identifier} - ${err.message}`);
       return jsonResponse({
         res,
         status: 'fail',
