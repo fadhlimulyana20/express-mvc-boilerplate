@@ -3,6 +3,7 @@ import { validationResult } from 'express-validator';
 import { AuthService } from '../services/authService';
 import logger from '../utils/logger';
 import { jsonResponse } from '../utils/jsonResponse';
+import { RegisterUserParams } from 'types/params/RegisterUserParams';
 
 /**
  * @swagger
@@ -23,15 +24,23 @@ import { jsonResponse } from '../utils/jsonResponse';
  *           schema:
  *             type: object
  *             required:
+ *               - name
+ *               - email
  *               - username
  *               - password
  *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
  *               username:
  *                 type: string
  *               password:
  *                 type: string
- *               role:
- *                 type: string
+ *               roles:
+ *                 type: array
+ *                 items:
+ *                    type: string
  *     responses:
  *       201:
  *         description: User registered
@@ -118,8 +127,8 @@ export class AuthController {
       })
     }
     try {
-      const { name, email, username, password } = req.body;
-      const user = await AuthService.register(name, email, username, password);
+      const { name, email, username, password, roles }: RegisterUserParams = req.body;
+      const user = await AuthService.register({ name, email, username, password, roles });
       logger.info(`User registered: ${user.id} (${user.username})`);
       return jsonResponse({
         res,
